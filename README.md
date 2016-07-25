@@ -5,7 +5,7 @@ Look for potential processed pseudogenes by applying filters to deletion SVs cal
 Some code adapted from [Ronak Shah's check_cDNA_contamination.py](https://github.com/rhshah/Miscellaneous/blob/master/check_cDNA_contamination.py).
 
 
-Usage:
+### Usage:
 ```
 usage: python processed_pseudogenes.py [-h] [-s sample_name] [-t n]
                                 [--iAnnotateSV iAnnotateSV.py]
@@ -34,18 +34,18 @@ optional arguments:
 ```
 
 
-Example usage:
+### Example usage:
 ```
 $ python processed_pseudogenes.py example.vcf ./ -s my_sample
 ```
 
 
-Output:
+### Output:
 - `<sample name>.pseudogenes.txt`: a one-line, tab-delimited list of sample name and its processed pseudogenes
 - Intermediate files in `<working directory>/scratch/`
 
 
-Requires:
+### Requires:
 - Python 2
 - pandas
 - [iAnnotateSV](https://github.com/rhshah/iAnnotateSV) and its required modules
