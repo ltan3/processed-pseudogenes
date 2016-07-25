@@ -6,7 +6,15 @@ import vcf, vcf.model
 import pandas as pd
 from iCallSV.dellyVcf2Tab import vcf2tab
 
+'''Filter a VCF for PRECISE deletions with PE > 10
 
+Args:
+	vcf_reader: vcf.Reader object
+
+Yields:
+	vcf._Record: the calls that pass filter
+
+'''
 def filter_vcf(vcf_reader):
 	for record in vcf_reader:
 		# assert type(record) == vcf.model._Record
@@ -16,6 +24,8 @@ def filter_vcf(vcf_reader):
 		if (info['SVTYPE'] == 'DEL') and ('PRECISE' in info) and (info['PE'] > 10):
 			yield record
 
+
+'''Main method'''
 def main(command=None):
 	
 	# 0: Parse aand interpret args
@@ -127,7 +137,19 @@ def main(command=None):
 	print 'Done!'
 
 
-# Adapted from check_cDNA_contamination.py by Ronak Shah
+'''Find pseudogenes herustically.
+
+Counts the number of events that aren't in exons, "in frame" or "out of frame",
+and returns the genes with more at least ``threshold`` of these events.
+Adapted from check_cDNA_contamination.py by Ronak Shah.
+
+Args:
+	dataDF (pandas.DataFrame): Output of iAnnotateSV
+	THRESHOLD (int): Threshold number of qualifying events
+
+Returns:
+	List of pseudogenes
+'''
 def find_pseudogenes(dataDF, THRESHOLD):
 	# Group the data by gene1 name
 	gDF = dataDF.groupby('gene1').groups
