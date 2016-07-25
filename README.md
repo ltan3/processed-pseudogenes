@@ -41,8 +41,8 @@ $ python processed_pseudogenes.py example.vcf ./ -s my_sample
 
 
 ### Output:
-- `<sample name>.pseudogenes.txt`: a one-line, tab-delimited list of sample name and its processed pseudogenes
-- Intermediate files in `<working directory>/scratch/`
+- `<output directory>/<sample name>.pseudogenes.txt`: a one-line, tab-delimited list of sample name and its processed pseudogenes
+- Intermediate files in `<output directory>/scratch/`
 
 
 ### Requires:
