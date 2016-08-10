@@ -131,7 +131,7 @@ def main(command=None):
 	out_file = PREFIX + '.pseudogenes.txt'
 
 	with open(out_file, 'wb') as out_fp:
-		out_fp.write('\t'.join( [PREFIX] + pseudogenes ))
+		out_fp.write('\t'.join( [PREFIX] + pseudogenes ) + '\n')
 
 
 	print 'Done!'
