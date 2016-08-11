@@ -171,7 +171,7 @@ def find_pseudogenes(dataDF, THRESHOLD):
 				fusion = str(record.loc['fusion'])
 				gene2 = record.loc['gene2']
 				# Skip entries that are within exon or are in-frame or out-of frame.
-				if ("Exon" in site1 and "Exon" in site2) or ("in frame" in fusion or "out of frame" in fusion):
+				if ("Exon" in site1 and "Exon" in site2) or ("in frame" in fusion or "out of frame" in fusion) or ('IGR' in site1 or 'IGR' in site2):
 					continue
 				else:
 					count = count + 1
