@@ -48,6 +48,7 @@ $ python processed_pseudogenes.py example.vcf ./ -s my_sample
 ### Requires:
 - Python 2
 - pandas
+- gridmap
 - [iAnnotateSV](https://github.com/rhshah/iAnnotateSV) and its required modules
 - [iCallSV](https://github.com/rhshah/iCallSV)
 - [PyVCF](https://github.com/jamescasbon/PyVCF)
@@ -58,3 +59,43 @@ $ python processed_pseudogenes.py example.vcf ./ -s my_sample
 2. Convert the filtered VCF to tab-delimited input format for iAnnotateSV, using iCallSV.dellyVcf2Tab
 3. Annotate using iAnnotateSV
 4. For each gene, count the number of events that aren't in exons, "in frame" or "out of frame".If a gene has more than the threshold number of events, then conclude it's a processed pseudogene.
+
+# run_processed-psuedogene_analysis.py 
+
+Wrapper to run processed_psuedogene_analysis.py 
+
+### Usage:
+```
+python run_processed-psuedogene_analysis.py  -h
+
+usage: run_processed-psuedogene_analysis.py  [options]
+
+Run processed-psuedogene_analysis on selected pools/samples using MSK data
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -mif folders.fof, --metaInformationFile folders.fof
+                        Full path folders and sample names of files.
+  -qc /some/path/qcLocation, --qcLocation /some/path/qcLocation
+                        Full path qc files.
+  -P /somepath/python, --python /somepath/python
+                        Full path Pyhton executables.
+  -ppg /somepath/process-pusedogene.py, --processpsuedogene /somepath/process-pusedogene.py
+                        Full path processpsuedogene.py executables.
+  -ias /somepath/iAnnotateSV.py, --iAnnotateSV /somepath/iAnnotateSV.py
+                        Full path iAnnotate.py executables.
+  -q all.q or clin.q, --queue all.q or clin.q
+                        Name of the SGE queue
+  -qsub /somepath/qsub, --qsubPath /somepath/qsub
+                        Full Path to the qsub executables of SGE.
+  -t 5, --threads 5     Number of Threads to be used to run process-psuedogene
+                        analysis on
+  -v, --verbose         make lots of noise [default]
+  -o /somepath/output, --outDir /somepath/output
+                        Full Path to the output dir.
+```
+
+### Example usage:
+```
+$ python run_processed-psuedogene_analysis.py  -mif /location/to/meatdata.txt -qc /dmp/qc/location/path -ppg /path/to/processed-pseudogenes/processed_pseudogenes.py -ias /path/to/iAnnotateSV.py -q sge_queue_name -qsub path/to/qsub -t 1 -o /path/to/output/directory -v 
+```
