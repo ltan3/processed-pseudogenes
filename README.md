@@ -99,3 +99,14 @@ optional arguments:
 ```
 $ python run_processed-psuedogene_analysis.py  -mif /location/to/meatdata.txt -qc /dmp/qc/location/path -ppg /path/to/processed-pseudogenes/processed_pseudogenes.py -ias /path/to/iAnnotateSV.py -q sge_queue_name -qsub path/to/qsub -t 1 -o /path/to/output/directory -v 
 ```
+
+### Meta information file format
+
+Tab separated file with header:
+
+| Run  | MRN  | Mnumber  | LIMS_ID  | DMP_ASSAY_ID | 12245 |
+|---|---|---|---|---|---|
+|  PoolName | SomeID  | SomeID  |  SomeID |  SomeID | Flag(0,1)  |
+
+From here:
+The **Run** and **LIMS_ID** are required.
