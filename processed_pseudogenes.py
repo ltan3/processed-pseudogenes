@@ -24,8 +24,66 @@ def filter_vcf(vcf_reader):
 		if (info['SVTYPE'] == 'DEL') and ('PRECISE' in info) and (info['PE'] > 10):
 			yield record
 
+'''Find pseudogenes herustically.
 
-'''Main method'''
+Counts the number of events that aren't in exons, "in frame" or "out of frame",
+and returns the genes with more at least ``threshold`` of these events.
+Adapted from check_cDNA_contamination.py by Ronak Shah.
+
+Args:
+	dataDF (pandas.DataFrame): Output of iAnnotateSV
+	THRESHOLD (int): Threshold number of qualifying events
+
+Returns:
+	List of pseudogenes
+'''
+def find_pseudogenes(dataDF, THRESHOLD):
+	# Group the data by gene1 name
+	gDF = dataDF.groupby('gene1').groups
+	
+	geneList = []
+	# traverse through gDF dictionary 
+	for gene1, value in gDF.iteritems():
+		# check how many entries are there of sv type
+		entries = len(value)
+		# run only if the event is deletion and has more then 2 entries for the same gene
+		if entries >= THRESHOLD:
+			
+			# number of cDNA events
+			count = 0
+			for idx in value:
+
+				record = dataDF.loc[idx]
+				site1 = str(record.loc['site1'])
+				site2 = str(record.loc['site2'])
+				fusion = str(record.loc['fusion'])
+				gene2 = record.loc['gene2']
+				
+				# Skip entries that are:
+				# - within exon
+				# - in-frame or out-of-frame
+				# - involve IGRs.
+				# - involve multiple genes
+				if ("Exon" in site1 and "Exon" in site2) or \
+				   ("in frame" in fusion or "out of frame" in fusion) or \
+				   ('IGR' in site1 or 'IGR' in site2) or \
+				   (gene1 != gene2):
+					continue
+				
+				else:
+					count += 1
+
+			# count the entries,genes and fill the 
+			if count >= THRESHOLD:
+				geneList.append(gene1)
+
+	return geneList
+
+
+'''Main method
+
+Passing a string will parse command line args from the string instead of stdin
+'''
 def main(command=None):
 	
 	# 0: Parse aand interpret args
@@ -119,6 +177,7 @@ def main(command=None):
 	print annotate_command
 	subprocess.check_call(shlex.split(annotate_command))
 
+
 	# 4: find pseudogenes
 	print 'Looking for pseudogenes...'
 
@@ -127,60 +186,17 @@ def main(command=None):
 
 	annotations_df = pd.read_table(annotations_file)
 	pseudogenes = find_pseudogenes(annotations_df, THRESHOLD=THRESHOLD)
+	pseudogenes.sort() # A to Z
 
 	out_file = PREFIX + '.pseudogenes.txt'
 
-	with open(out_file, 'wb') as out_fp:
-		out_fp.write('\t'.join( [PREFIX] + pseudogenes ) + '\n')
+	with open(out_file, 'w') as out_fp:
+		for gene in pseudogenes:
+			out_fp.write('%s\t%s\n' % (PREFIX, gene))
 
 
 	print 'Done!'
 
-
-'''Find pseudogenes herustically.
-
-Counts the number of events that aren't in exons, "in frame" or "out of frame",
-and returns the genes with more at least ``threshold`` of these events.
-Adapted from check_cDNA_contamination.py by Ronak Shah.
-
-Args:
-	dataDF (pandas.DataFrame): Output of iAnnotateSV
-	THRESHOLD (int): Threshold number of qualifying events
-
-Returns:
-	List of pseudogenes
-'''
-def find_pseudogenes(dataDF, THRESHOLD):
-	# Group the data by gene1 name
-	gDF = dataDF.groupby('gene1').groups
-	
-	geneList = []
-	# traverse through gDF dictionary 
-	for gene1, value in gDF.iteritems():
-		# check how many entries are there of sv type
-		entries = len(value)
-		# initialize the number of cDNA events and a list of corresponding genes
-		count = 0
-		
-		# run only if the event is deletion and has more then 2 entries for the same gene
-		if entries >= THRESHOLD:
-			for idx in value:
-				record = dataDF.loc[idx]
-				site1 = str(record.loc['site1'])
-				site2 = str(record.loc['site2'])
-				fusion = str(record.loc['fusion'])
-				gene2 = record.loc['gene2']
-				# Skip entries that are within exon or are in-frame or out-of frame.
-				if ("Exon" in site1 and "Exon" in site2) or ("in frame" in fusion or "out of frame" in fusion) or ('IGR' in site1 or 'IGR' in site2):
-					continue
-				else:
-					count = count + 1
-
-		# count the entries,genes and fill the 
-		if count >= THRESHOLD:
-			geneList.append(gene1)
-
-	return geneList
 
 if __name__ == '__main__':
 	main()
